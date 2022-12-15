@@ -63,14 +63,14 @@ export type HeatmapProps = {
   events?: boolean;
 };
 
-const defaultMargin = { top: 10, left: 20, right: 20, bottom: 110 };
+const defaultMargin = { top: 5, left: 5, right: 5, bottom: 32.5 };
 
 const HeatMapV1 = ({
   width,
   height,
   events = false,
   margin = defaultMargin,
-  separation = 20,
+  separation = 10,
 }: HeatmapProps) => {
   // bounds
   const size =
@@ -94,43 +94,12 @@ const HeatMapV1 = ({
         y={0}
         width={width}
         height={height}
-        rx={14}
+        rx={4}
         fill={background}
       />
       <Group top={margin.top} left={margin.left}>
-        <HeatmapCircle
-          data={binData}
-          xScale={(d) => xScale(d) ?? 0}
-          yScale={(d) => yScale(d) ?? 0}
-          colorScale={circleColorScale}
-          opacityScale={opacityScale}
-          radius={radius}
-          gap={2}
-        >
-          {(heatmap) =>
-            heatmap.map((heatmapBins) =>
-              heatmapBins.map((bin) => (
-                <circle
-                  key={`heatmap-circle-${bin.row}-${bin.column}`}
-                  className="visx-heatmap-circle"
-                  cx={bin.cx}
-                  cy={bin.cy}
-                  r={bin.r}
-                  fill={bin.color}
-                  fillOpacity={bin.opacity}
-                  onClick={() => {
-                    if (!events) return;
-                    const { row, column } = bin;
-                    alert(JSON.stringify({ row, column, bin: bin.bin }));
-                  }}
-                />
-              ))
-            )
-          }
-        </HeatmapCircle>
-      </Group>
-      <Group top={margin.top} left={xMax + margin.left + separation}>
         <HeatmapRect
+          widths={"100%"}
           data={binData}
           xScale={(d) => xScale(d) ?? 0}
           yScale={(d) => yScale(d) ?? 0}
@@ -138,7 +107,8 @@ const HeatMapV1 = ({
           opacityScale={opacityScale}
           binWidth={binWidth}
           binHeight={binWidth}
-          gap={2}
+          gap={1}
+          x0={5}
         >
           {(heatmap) =>
             heatmap.map((heatmapBins) =>

@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nivo/bar": "^0.79.0",
+    "@nivo/core": "^0.79.0",
+    "@nivo/heatmap": "^0.79.0",
     "@visx/group": "^2.10.0",
     "@visx/heatmap": "^2.10.0",
     "@visx/mock-data": "^2.15.1",
+    "@visx/responsive": "^2.10.0",
     "@visx/scale": "^2.2.2",
     "@visx/shape": "^2.12.2",
     "react": "^18.2.0",
