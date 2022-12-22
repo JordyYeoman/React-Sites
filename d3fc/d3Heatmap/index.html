@@ -22,6 +22,9 @@
     <script src="https://unpkg.com/d3fc@14.1.0"></script>
     <!-- Use babel so that we can use ES6 syntax -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Adding Shapes to points -->
+    <script src="https://cdn.jsdelivr.net/npm/d3-path@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-shape@3"></script>
   </head>
   <style>
     body {
@@ -42,13 +45,13 @@
     .gridline-x,
     .annotation-line > line {
       stroke: currentColor;
-      stroke-opacity: 0.1;
+      stroke-opacity: 0.5;
     }
 
     #chart {
       margin: auto;
       width: 900px;
-      height: 450px;
+      height: 750px;
     }
 
     .y-axis-label {
@@ -56,18 +59,8 @@
     }
   </style>
   <body>
-    <!-- <div id="chart"></div> -->
-    <!-- <d3fc-canvas use-device-pixel-ratio></d3fc-canvas> -->
     <div id="chart"></div>
-
-    <!-- Create a div where the graph will take place -->
-    <!-- <div id="my_dataviz"></div> -->
-
-    <!-- <script src="index.js"></script> -->
     <script src="basicChart.js"></script>
-    <!-- <script src="basicHeatmap.js"></script> -->
-    <!-- Load color palettes -->
-    <!-- <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script> -->
   </body>
 </html>
 
