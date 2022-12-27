@@ -1,74 +1,55 @@
 // const width = 820;
 // const height = 384;
 
-console.log("System starting....");
-
-const pointSeries = fc
-  .seriesWebglPoint()
-  .crossValue((d) => d.iteration)
-  .mainValue((d) => d.reading)
-  .size(20)
-  .decorate((program) => {
-    fc.symbolsFill().color([1, 0, 0, 1])(program);
-    fc.pointAntiAlias()(program);
-
-    const gl = program.context();
-    gl.enable(gl.BLEND);
-    gl.blendFuncSeparate(
-      gl.SRC_ALPHA,
-      gl.ONE_MINUS_DST_ALPHA,
-      gl.ONE,
-      gl.ONE_MINUS_SRC_ALPHA
-    );
-  });
+console.log('System starting....');
 
 const xExtent = fc.extentLinear().accessors([(d) => d.iteration]);
 // .pad([0, 0.01]);
 const yExtent = fc.extentLinear().accessors([(d) => d.reading]);
 
-d3.csv("testFormat.csv", type).then((data) => {
+d3.csv('./utils/PROCESSED_BeltThickness.csv', type).then((data) => {
+  // Find domain values
+  const minValue = d3.min(data, (d) => d.reading);
+  const maxValue = d3.max(data, (d) => d.reading);
+
+  // Generate a color scale
+  const colorScale = d3
+    .scaleSequential(fc.interpolateRgb)
+    .domain([minValue, maxValue]);
+
   const xScale = d3.scaleLinear().domain(xExtent(data));
   const xScaleCopy = xScale.copy();
   const yScale = d3.scaleLinear().domain(yExtent(data));
   const yScaleCopy = yScale.copy();
 
-  // const zoom = d3
-  //   .zoom()
-  //   .extent([
-  //     [0, 0],
-  //     [width, height],
-  //   ])
-  //   .scaleExtent([1, 10])
-  //   .translateExtent([
-  //     [0, 0],
-  //     [width, height],
-  //   ])
-  //   .on("zoom", () => {
-  //     xScale.domain(d3.event.transform.rescaleX(xScaleCopy).domain());
-  //     yScale.domain(d3.event.transform.rescaleY(yScaleCopy).domain());
-  //     d3.select("d3fc-group").node().requestRedraw();
-  //   });
+  const pointSeries = fc
+    .seriesWebglPoint()
+    .crossValue((d) => d.iteration)
+    .mainValue((d) => d.reading)
+    .size(20)
+    .decorate((program) => {
+      fc.pointFill().color((d) => colorScale(d.reading))(program);
+      fc.pointAntiAlias()(program);
 
-  // const decorate = (selection) => {
-  //   selection
-  //     .enter()
-  //     .select(".plot-area")
-  //     .on("measure.range", () => {
-  //       xScaleCopy.range([0, d3.event.detail.width]);
-  //       yScaleCopy.range([d3.event.detail.height, 0]);
-  //     });
-  //   .call(zoom);
-  // };
+      const gl = program.context();
+      gl.enable(gl.BLEND);
+      gl.blendFuncSeparate(
+        gl.SRC_ALPHA,
+        gl.ONE_MINUS_DST_ALPHA,
+        gl.ONE,
+        gl.ONE_MINUS_SRC_ALPHA
+      );
+    });
 
   const chart = fc
     .chartCartesian(xScale, yScale)
     .webglPlotArea(pointSeries)
-    .xLabel("Iteration")
-    .yLabel("Reading");
+    .xLabel('Iteration')
+    .yLabel('Reading');
   // .yTickFormat(d3.format(".3s"))
   // .decorate(decorate); // Remove zoom decoration for now to improve rendering performance
 
-  d3.select("#chart").datum(data).call(chart);
+  d3.select('#chart').datum(data).call(chart);
 });
 
 function type(d) {
