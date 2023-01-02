@@ -1,5 +1,25 @@
 import fs from 'fs';
 
+// Generator Util
+const generateData = () => {
+  let data = Array.from(Array(100000).keys()).map((val) => {
+    return {
+      Iteration: (Math.random() * 100 - val * val).toString(),
+      'Sensor 1': Math.random() * 10 * Math.random(),
+      'Sensor 2': Math.random() * 2 * Math.random(),
+      'Sensor 3': Math.random() * 10 * Math.random(),
+      'Sensor 4': Math.random() * 13 * Math.random(),
+      'Sensor 5': Math.random() * 10 * Math.random(),
+      'Sensor 6': Math.random() * 40 * Math.random(),
+      'Sensor 7': Math.random() * 10 * Math.random(),
+      'Sensor 8': Math.random() * 10 * Math.random(),
+      'Sensor 9': Math.random() * 1.5 * Math.random(),
+      'Sensor 10': Math.random() * 10 * Math.random(),
+    };
+  });
+  return data;
+};
+
 const filename = 'BeltThickness.csv';
 const topRow = [
   'Iteration',
