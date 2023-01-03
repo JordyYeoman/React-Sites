@@ -1,6 +1,7 @@
 import fc from 'd3fc';
+import * as d3 from "d3";
 
-export const getColorForVal = (val) => {
+export const getColorForVal = (val: number) => {
     if (typeof val !== 'number') return '#ffffff';
   
     // Red - Belt is significantly worn
@@ -23,7 +24,7 @@ export const getColorForVal = (val) => {
     return '#ffffff';
   };
   
-  function type(d) {
+  export function type(d: any) {
     d.Iteration = Number(d.Iteration).toString();
     d.sensor1 = Number(d.sensor1);
     d.sensor2 = Number(d.sensor2);
@@ -39,7 +40,7 @@ export const getColorForVal = (val) => {
   }
   
   // Read data from CSV
-  d3.csv('./utils/PROCESSED_V2_BeltThickness.csv', type).then((dataV2) => {
+  d3.csv('./utils/PROCESSED_V2_BeltThickness.csv', type).then((dataV2: any) => {
     const data = [...dataV2];
   
     // Run chart
@@ -48,7 +49,7 @@ export const getColorForVal = (val) => {
       .keys(Object.keys(data[0]).filter((k) => k !== 'Iteration'));
     const series = stack(data);
   
-    const container = document.querySelector('d3fc-canvas');
+    const container: any = document.querySelector('d3fc-canvas')!;
   
     const xScale = d3
       .scalePoint()
@@ -57,7 +58,7 @@ export const getColorForVal = (val) => {
   
     const yExtent = fc
       .extentLinear()
-      .accessors([(a) => a.map((d) => d[1])])
+      .accessors([(a: any[]) => a.map((d: any[]) => d[1])])
       .include([0]);
   
     const yScale = d3.scaleLinear().domain(yExtent(series));
@@ -68,37 +69,42 @@ export const getColorForVal = (val) => {
       .seriesWebglBar()
       .xScale(xScale)
       .yScale(yScale)
-      .crossValue((d) => d.data.Iteration)
-      .mainValue((d) => d[1])
-      .baseValue((d) => d[0]);
+      .crossValue((d: { data: { Iteration: any; }; }) => d.data.Iteration)
+      .mainValue((d: any[]) => d[1])
+      .baseValue((d: any[]) => d[0]);
   
     let pixels: Uint8Array | null = null;
     let frame = 0;
     let gl: WebGLRenderingContext | null = null;
   
     d3.select(container)
-      .on('measure', (event) => {
+      .on('measure', (event: { detail: { width: any; height: any; }; }) => {
         const { width, height } = event.detail;
         xScale.range([0, width]);
         yScale.range([height, 0]);
   
-        gl = container.querySelector('canvas').getContext('webgl');
+        if(container) {
+          gl = container?.querySelector('canvas')?.getContext('webgl') ?? null;
+        }
         barSeries.context(gl);
       })
       .on('draw', () => {
         if (pixels == null) {
-          pixels = new Uint8Array(
-            gl.drawingBufferWidth * gl.drawingBufferHeight * 4
-          );
+          if(gl){
+            pixels = new Uint8Array(
+              gl.drawingBufferWidth * gl.drawingBufferHeight * 4
+            );
+          } 
         }
         performance.mark(`draw-start-${frame}`);
-        series.forEach((s, i) => {
-          barSeries.decorate((program) => {
+        series.forEach((s: any, i: any) => {
+          barSeries.decorate((program: any) => {
             fc
               .webglFillColor()
-              .value((x) => {
+              .value((x: { [x: string]: any; }) => {
                 const sensorValue = x[`sensor${i}`];
                 let colorValue = getColorForVal(sensorValue);
+                // @ts-ignore
                 let { r, g, b, opacity } = d3.color(colorValue);
                 return [r / 255, g / 255, b / 255, opacity];
               })
@@ -107,7 +113,7 @@ export const getColorForVal = (val) => {
         });
   
         // Force GPU to complete rendering to allow accurate performance measurements to be taken
-        gl.readPixels(
+        gl?.readPixels(
           0,
           0,
           gl.drawingBufferWidth,
@@ -125,6 +131,6 @@ export const getColorForVal = (val) => {
         frame++;
       });
   
-    container.requestRedraw();
+    container?.requestRedraw();
   });
   
