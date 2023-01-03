@@ -1,34 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- <script src="https://unpkg.com/d3"></script>
-    <script src="https://unpkg.com/d3fc"></script> -->
-    <script src="https://unpkg.com/seedrandom@2.3.3/seedrandom.js"></script>
-    <script>
-      Math.seedrandom('a22ebc7c488a3a47');
-    </script>
-    <script src="https://unpkg.com/mockdate@3.0.5/lib/mockdate.js"></script>
-    <script>
-      MockDate.set('2000-01-01', 0);
-    </script>
-
-    <!-- // Test -->
-    <!-- Include polyfills for curstom event, Symbol and Custom Elements -->
-    <script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.js"></script>
-    <script src="https://unpkg.com/custom-event-polyfill@0.3.0/custom-event-polyfill.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/document-register-element/1.8.0/document-register-element.js"></script>
-
-    <script src="https://unpkg.com/d3@5.14.2"></script>
-    <script src="https://unpkg.com/d3fc@14.1.0"></script>
-    <!-- Use babel so that we can use ES6 syntax -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <!-- Adding Shapes to points -->
-    <script src="https://cdn.jsdelivr.net/npm/d3-path@3"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3-shape@3"></script>
+    <script src="https://unpkg.com/d3"></script>
+    <script src="https://unpkg.com/d3fc"></script>
+    <link rel="icon" href="data:;base64,=" />
   </head>
   <style>
     body {
-      /* color: #1b1e23; */
+      color: #1b1e23;
       font-size: small;
       font-family: sans-serif;
       height: calc(100vh - 2em);
@@ -59,8 +38,8 @@
     }
   </style>
   <body>
-    <div id="chart"></div>
-    <script src="basicChart.js"></script>
+    <d3fc-canvas use-device-pixel-ratio set-webgl-viewport></d3fc-canvas>
+    <script src="heatmap.js"></script>
   </body>
 </html>
 
