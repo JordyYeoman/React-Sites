@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import * as fc from "d3fc";
 import React from "react";
+import Header from "./components/templates/Header";
 
 // function App() {
 //   return (
@@ -88,3 +89,22 @@ const initialData = stream.take(100);
 export const ChartMan = () => (
   <StreamingChart initialData={initialData} next={stream.next} />
 );
+
+export const App = () => {
+  return (
+    <div className="w-full">
+      <Header />
+      <div className="flex justify-center items-center m-4 h-80">
+        <div className="bg-gray-800 mr-2 w-full h-full rounded">
+          Input Adjuster
+        </div>
+        <div className="bg-gray-800 ml-2 w-full h-full rounded">
+          Stat Visuals
+        </div>
+      </div>
+      <div className="flex justify-center items-center m-4 h-[32rem]">
+        <div className="bg-gray-800 w-full h-full rounded">Chart Container</div>
+      </div>
+    </div>
+  );
+};
