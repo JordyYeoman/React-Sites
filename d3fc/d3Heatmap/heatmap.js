@@ -1,24 +1,24 @@
 const getColorForVal = (val) => {
-  if (typeof val !== 'number') return '#ffffff';
+  if (typeof val !== "number") return "#ffffff";
 
   // Red - Belt is significantly worn
   if (val <= 19) {
-    return '#ff0707';
+    return "#ff0707";
   }
   // Orange - Belt has a decent amount of wear
   if (val <= 20.75) {
-    return '#ff6007';
+    return "#ff6007";
   }
   // Yellow - Mild wear on belt
   if (val <= 21.5) {
-    return '#ffe607';
+    return "#ffe607";
   }
   // Green - Belt is in good condition
   if (val > 21.5) {
-    return '#74ff07';
+    return "#74ff07";
   }
   // Fail case - Return white
-  return '#ffffff';
+  return "#ffffff";
 };
 
 function type(d) {
@@ -37,16 +37,16 @@ function type(d) {
 }
 
 // Read data from CSV
-d3.csv('./utils/PROCESSED_V2_BeltThickness.csv', type).then((dataV2) => {
+d3.csv("./utils/PROCESSED_V2_BeltThickness.csv", type).then((dataV2) => {
   const data = [...dataV2];
 
   // Run chart
   const stack = d3
     .stack()
-    .keys(Object.keys(data[0]).filter((k) => k !== 'Iteration'));
+    .keys(Object.keys(data[0]).filter((k) => k !== "Iteration"));
   const series = stack(data);
 
-  const container = document.querySelector('d3fc-canvas');
+  const container = document.querySelector("d3fc-canvas");
 
   const xScale = d3
     .scalePoint()
@@ -75,15 +75,15 @@ d3.csv('./utils/PROCESSED_V2_BeltThickness.csv', type).then((dataV2) => {
   let gl = null;
 
   d3.select(container)
-    .on('measure', (event) => {
+    .on("measure", (event) => {
       const { width, height } = event.detail;
       xScale.range([0, width]);
       yScale.range([height, 0]);
 
-      gl = container.querySelector('canvas').getContext('webgl');
+      gl = container.querySelector("canvas").getContext("webgl");
       barSeries.context(gl);
     })
-    .on('draw', () => {
+    .on("draw", () => {
       if (pixels == null) {
         pixels = new Uint8Array(
           gl.drawingBufferWidth * gl.drawingBufferHeight * 4
@@ -98,6 +98,7 @@ d3.csv('./utils/PROCESSED_V2_BeltThickness.csv', type).then((dataV2) => {
               const sensorValue = x[`sensor${i}`];
               let colorValue = getColorForVal(sensorValue);
               let { r, g, b, opacity } = d3.color(colorValue);
+              opacity = 0.8;
               return [r / 255, g / 255, b / 255, opacity];
             })
             .data(data)(program);

@@ -11,7 +11,7 @@
 // Full yellow color with 100% opacity
 // fc.pointFill().color([1, 1, 0, 1])(program);
 
-console.log('System starting....');
+console.log("System starting....");
 
 const xExtent = fc
   .extentLinear()
@@ -19,8 +19,8 @@ const xExtent = fc
   .pad([0.001, 0.001]);
 const yExtent = fc.extentLinear().accessors([(d) => d.reading]);
 
-d3.csv('./utils/PROCESSED_BeltThickness.csv', type).then((data) => {
-  // Find domain values
+d3.csv("./utils/PROCESSED_V2_BeltThickness.csv", type).then((data) => {
+  // Find the minimum and maximum values
   const minValue = d3.min(data, (d) => d.reading);
   const maxValue = d3.max(data, (d) => d.reading);
 
@@ -52,10 +52,10 @@ d3.csv('./utils/PROCESSED_BeltThickness.csv', type).then((data) => {
     .decorate((program) => {
       // fc.pointFill().color(getRandomColor())(program);
       // fc.pointFill().color([0, 0, 1, 0.5])(program);
-      console.log('Calling pointFill bra');
+      console.log("Calling pointFill bra");
       // fc.pointFill((d) => colorScale(d.reading))(program);
       // fc.pointFill((d) => colorScale(d.reading))(program);
-      console.log('End pointfill');
+      console.log("End pointfill");
 
       fc.pointAntiAlias()(program);
 
@@ -72,10 +72,11 @@ d3.csv('./utils/PROCESSED_BeltThickness.csv', type).then((data) => {
   const chart = fc
     .chartCartesian(xScale, yScale)
     .webglPlotArea(pointSeries)
-    .xLabel('Iteration')
-    .yLabel('Reading');
+    .xLabel("Iteration")
+    .yLabel("Reading");
 
-  d3.select('#chart').datum(data).call(chart);
+  // Render the chart
+  d3.select("#chart").datum(data).call(chart);
 });
 
 function type(d) {
