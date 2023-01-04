@@ -51,7 +51,7 @@ export const SimpleChart = ({ chartId, data, width, height }: any) => {
   );
 };
 
-const StreamingChart = ({
+export const StreamingChart = ({
   initialData,
   next,
 }: {
