@@ -14,6 +14,11 @@ export default function Header() {
           </li>
           <li>
             <a href="#" className="text-white hover:text-gray-400">
+              Data
+            </a>
+          </li>
+          <li>
+            <a href="#" className="text-white hover:text-gray-400">
               About
             </a>
           </li>
