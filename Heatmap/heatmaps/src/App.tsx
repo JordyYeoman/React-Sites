@@ -54,13 +54,13 @@ export const App = () => {
           className="bg-gray-800 w-full h-full rounded p-4"
           ref={containerRef}
         >
-          <img
+          {/* <img
             className="w-full h-full object-contain rounded overflow-hidden"
             src={"./belt2.png"}
-          />
+          /> */}
           {/* <CanvasHeatmap containerRef={containerRef} /> */}
-          {/* <SimpleChart /> */}
-          {/* <CanvasHeatmap /> */}
+          <SimpleChart />
+          <CanvasHeatmap />
         </div>
       </div>
       <Footer />

@@ -2,7 +2,7 @@ export default function Header() {
   return (
     <header className="bg-gray-800 p-4 flex justify-between items-center">
       <div className="text-white font-bold text-2xl flex-col justify-center items-center">
-        <div>RIMA</div>
+        <div>REMA</div>
         <p className="text-sm -mt-2 uppercase">Tip Top</p>
       </div>
       <nav>

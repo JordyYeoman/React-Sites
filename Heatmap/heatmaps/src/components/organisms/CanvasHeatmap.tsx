@@ -151,12 +151,12 @@ export class CanvasHeatmap extends Component {
           const ctx = container.querySelector("canvas").getContext("2d");
           series.context(ctx);
         });
-      container.requestRedraw();
+      // container.requestRedraw();
     });
   }
   render() {
     // @ts-ignore
-    return <canvas ref={this.containerRef} width={500} height={500} />;
+    return <df3c-canvas ref={this.containerRef} width={500} height={500} />;
   }
 }
 

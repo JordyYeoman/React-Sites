@@ -38,16 +38,14 @@ window.addEventListener("load", () => {
   }
 
   // Read data from CSV
-  d3.csv("./utils/PROCESSED_V2_BeltThickness.csv", type).then((dataV2) => {
-    const data = [...dataV2];
+  d3.csv("./utils/PROCESSED_V2_BeltThickness.csv", type).then((data) => {
+    const container = document.querySelector("d3fc-canvas");
 
     // Run chart
     const stack = d3
       .stack()
       .keys(Object.keys(data[0]).filter((k) => k !== "Iteration"));
     const series = stack(data);
-
-    const container = document.querySelector("d3fc-canvas");
 
     const xScale = d3
       .scalePoint()
