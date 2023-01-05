@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
     if (typeof val !== "number") return "#ffffff";
 
     // Red - Belt is significantly worn
-    if (val <= 21) {
+    if (val <= 20) {
       return "#ff0707";
     }
     // Orange - Belt has a decent amount of wear
@@ -20,33 +20,21 @@ window.addEventListener("load", () => {
       // return "#74ff07";
       return "green";
     }
+    console.log("Fail val: ", val);
     // Fail case - Return white
     return "green";
   };
 
   d3.csv("./utils/PROCESSED_BeltThickness.csv", type).then((data) => {
     const container = document.querySelector("d3fc-canvas");
-    console.log("data", data);
 
     // Here we use band scales to demonstrate that the autoBandwidth component
     // is able to obtain the bandwidth from the scale
     const xScale = d3.scaleBand().domain(d3.range(1, 120000));
-
     const yScale = d3.scaleBand().domain(d3.range(1, 10));
 
-    const xAxis = fc.axisBottom().scale(xScale);
-
-    const yAxis = fc.axisLeft().scale(yScale);
-
     const series = fc
-      .autoBandwidth(
-        fc.seriesCanvasHeatmap({
-          xAxis: {
-            bottom: (xAxis) => customAxis(fc.axisBottom(xAxis), true),
-          },
-          xLabel: "Value",
-        })
-      )
+      .autoBandwidth(fc.seriesCanvasHeatmap())
       .xValue((d) => d.count)
       .yValue((d) => d.day)
       .colorValue((d) => d.hour)
@@ -55,10 +43,10 @@ window.addEventListener("load", () => {
       // The band scales require different alignments
       .xAlign("right")
       .yAlign("top")
-      .widthFraction(10.01)
-      .decorate((context, data, index) => {
-        context.fillStyle = getColorForVal(data.hour);
-      });
+      .widthFraction(10.01);
+    // .decorate((context, data, index) => {
+    //   context.fillStyle = getColorForVal(data.hour);
+    // });
 
     d3.select(container)
       .on("draw", () => {
@@ -71,19 +59,6 @@ window.addEventListener("load", () => {
 
         const ctx = container.querySelector("canvas").getContext("2d");
         series.context(ctx);
-      })
-      .on("zoom", () => {
-        // @ts-ignore
-        xScale.range([
-          event.transform.x,
-          width * event.transform.k + event.transform.x,
-        ]);
-        pointSeries
-          .xScale(xScale)
-          .yScale(yScale)
-          .color((d) => getColorForVal(d.sensor1))
-          .data(data)
-          .render();
       });
 
     container.requestRedraw();
@@ -95,6 +70,4 @@ window.addEventListener("load", () => {
     d.hour = Number(d.hour);
     return d;
   }
-
-  // ...
 });
