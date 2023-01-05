@@ -4,15 +4,15 @@ window.addEventListener("load", () => {
     if (typeof val !== "number") return "#ffffff";
 
     // Red - Belt is significantly worn
-    if (val <= 20.5) {
+    if (val <= 21) {
       return "#ff0707";
     }
     // Orange - Belt has a decent amount of wear
-    if (val <= 21.25) {
+    if (val <= 21.5) {
       return "#ff6007";
     }
     // Yellow - Mild wear on belt
-    if (val <= 21.75) {
+    if (val <= 21.95) {
       return "#ffe607";
     }
     // Green - Belt is in good condition
@@ -30,7 +30,7 @@ window.addEventListener("load", () => {
 
     // Here we use band scales to demonstrate that the autoBandwidth component
     // is able to obtain the bandwidth from the scale
-    const xScale = d3.scaleBand().domain(d3.range(1, 100000));
+    const xScale = d3.scaleBand().domain(d3.range(1, 120000));
 
     const yScale = d3.scaleBand().domain(d3.range(1, 10));
 
@@ -71,6 +71,19 @@ window.addEventListener("load", () => {
 
         const ctx = container.querySelector("canvas").getContext("2d");
         series.context(ctx);
+      })
+      .on("zoom", () => {
+        // @ts-ignore
+        xScale.range([
+          event.transform.x,
+          width * event.transform.k + event.transform.x,
+        ]);
+        pointSeries
+          .xScale(xScale)
+          .yScale(yScale)
+          .color((d) => getColorForVal(d.sensor1))
+          .data(data)
+          .render();
       });
 
     container.requestRedraw();
