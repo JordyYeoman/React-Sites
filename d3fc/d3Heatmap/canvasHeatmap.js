@@ -21,7 +21,7 @@ window.addEventListener("load", () => {
       return "green";
     }
     // Fail case - Return white
-    return "#ffffff";
+    return "green";
   };
 
   d3.csv("./utils/PROCESSED_BeltThickness.csv", type).then((data) => {
@@ -30,7 +30,7 @@ window.addEventListener("load", () => {
 
     // Here we use band scales to demonstrate that the autoBandwidth component
     // is able to obtain the bandwidth from the scale
-    const xScale = d3.scaleBand().domain(d3.range(1, 2000));
+    const xScale = d3.scaleBand().domain(d3.range(1, 100000));
 
     const yScale = d3.scaleBand().domain(d3.range(1, 10));
 
