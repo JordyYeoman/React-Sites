@@ -11,6 +11,8 @@ worker.onmessage = (e) => {
   const crossValue = (d) => d.date;
   const mainValue = (d) => d.distance;
 
+  // vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));
+
   const areaSeries = fc
     .seriesWebglArea()
     .mainValue(mainValue)
@@ -19,8 +21,9 @@ worker.onmessage = (e) => {
     .equals((d) => d.length)
     .decorate((program) => {
       program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-        .appendBody(`float colourModifier = smoothstep(50.0, 400.0, aMainValue);
-            vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));
+        .appendBody(`
+            float colourModifier = smoothstep(50.0, 400.0, aMainValue);
+            vColor = mix(vec4(0.0, 1.0, 0.0, 1.0), vec4(1.0, 0.0, 0.0, 1.0), colourModifier);
             float verticalFade = max(0.0, smoothstep(-1.1, -0.9, gl_Position.y) - 0.15);
             vColor.a = vColor.a * verticalFade;
         `);
@@ -31,6 +34,8 @@ worker.onmessage = (e) => {
         `);
     });
 
+  //vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));`
+
   const lineSeries = fc
     .seriesWebglLine()
     .mainValue(mainValue)
@@ -40,8 +45,10 @@ worker.onmessage = (e) => {
     .lineWidth(2)
     .decorate((program) => {
       program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-        .appendBody(`float colourModifier = smoothstep(-0.875, 1.0, gl_Position.y);
-                    vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));`);
+        .appendBody(`
+                    float colourModifier = smoothstep(-0.875, 1.0, gl_Position.y);
+                    vColor = mix(vec4(0.0, 1.0, 0.0, 1.0), vec4(1.0, 0.0, 0.0, 1.0), colourModifier);
+                    `);
       program.fragmentShader().appendHeader(`varying lowp vec4 vColor;`)
         .appendBody(`
                     gl_FragColor = vColor;
@@ -69,7 +76,7 @@ worker.onmessage = (e) => {
 
   render();
 };
-worker.postMessage({ numPoints: 100000 });
+worker.postMessage({ numPoints: 1000000 });
 
 // Testing
 dataWorker.onmessage = (e) => {
