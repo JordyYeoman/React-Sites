@@ -6,7 +6,6 @@ window.addEventListener("load", () => {
   const dataPoints = 1000;
 
   dataWorker.onmessage = (e) => {
-    //   const data = e.data;
     const data = [
       {
         count: 1,
@@ -202,16 +201,11 @@ window.addEventListener("load", () => {
       },
     ];
 
-    const stackedData = d3
-      .stack()
-      .keys(["sensor1", "sensor2"])
-      .offset(d3.stackOffsetNone)(data);
-
-    console.log("data", data);
-    console.log("stackedData", stackedData);
-
     const xScale = d3.scaleLinear().domain([0, 100]);
     const yScale = d3.scaleLinear().domain([0, 100]);
+
+    // Create an interpolator to map sensor values to colors
+    const colorInterpolator = d3.interpolate("green", "red");
 
     const series1 = fc
       .seriesWebglBar()
@@ -220,56 +214,18 @@ window.addEventListener("load", () => {
       .crossValue((d) => d.count)
       .mainValue((d) => 10)
       .decorate((program, d) => {
-        // const gl = program.context();
-        // gl.useProgram(program);
-        // const programObject = program.program();
-        // const location = gl.getUniformLocation(programObject, "uSensorValue");
-
-        //     const attribute = fc
-        //   .webglAttribute()
-        //   .size(1)
-        //   .type(5126)
-        //   .data((context) => {
-        //     console.log(context);
-        //     return [context.datum.sensor1];
-        //   });
-        //     program.buffers().attribute("uSensorValue", attribute);
-
-        // Define the sensor reading value as an attribute
-        // let x = program.buffers();
-        // console.log("x", x);
-
-        // program
-        //   .buffers()
-        //   .attribute("uSensorValue", (context) => [context.datum.sensor1]);
-
-        // let ctx = program.context();
-        // console.log("ctx", ctx);
-
-        // let location = ctx.getUniformLocation(x, "uSensorValue");
-        // console.log("location", location);
-
-        // Create color value
-
-        program.vertexShader().appendHeader(`
-          uniform float uSensorValue;
-          varying lowp vec4 vColor;
-        `).appendBody(`
-            vColor = mix(vec4(0.0, 1.0, 0.0, 1.0), vec4(1.0, 1.0, 0.0, 1.0), ${
-              Math.random() * 10
-            });
-            vColor = mix(vColor, vec4(1.0, 0.5, 0.0, 1.0), ${
-              Math.random() * 5
-            });
-            vColor = mix(vColor, vec4(1.0, 0.0, 0.0, 1.0), ${
-              Math.random() * 100
-            });
-      `);
+        const color = colorInterpolator(d.sensor1 / 110);
+        console.log("color, ", color);
+        program
+          .vertexShader()
+          .appendHeader(`varying lowp vec4 vColor;`)
+          // Set the color of the bar using the calculated color
+          .appendBody(`vColor = vec4(${color}, 1.0);`);
         program.fragmentShader().appendHeader(`
-          varying lowp vec4 vColor;
-        `).appendBody(`
-          gl_FragColor = vColor;
-        `);
+                varying lowp vec4 vColor;
+            `).appendBody(`
+                gl_FragColor = vColor;
+            `);
       });
 
     const series2 = fc
@@ -314,51 +270,9 @@ window.addEventListener("load", () => {
             `);
       });
 
-    const series4 = fc
-      .seriesWebglBar()
-      .crossValue((d) => d.count)
-      .mainValue((d) => 10)
-      .baseValue((d) => 40)
-      .decorate((program) => {
-        program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-          .appendBody(`
-              if (aMainValue < 5.0) {
-                  vColor = vec4(1.0, 0.0, 0.0, 1.0);
-              } else {
-              vColor = vec4(1.0, 0.7, 0.0, 1.0);
-              }
-            `);
-        program.fragmentShader().appendHeader(`
-                varying lowp vec4 vColor;
-            `).appendBody(`
-                gl_FragColor = vColor;
-            `);
-      });
-
-    const series5 = fc
-      .seriesWebglBar()
-      .crossValue((d) => d.count)
-      .mainValue((d) => 10)
-      .baseValue((d) => 50)
-      .decorate((program) => {
-        program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-          .appendBody(`
-              if (aMainValue > 5.0) {
-                  vColor = vec4(0.7, 0.2, 0.2, 1.0);
-              } else {
-              vColor = vec4(1.0, 0.7, 0.0, 1.0);
-              }
-            `);
-        program.fragmentShader().appendHeader(`
-                varying lowp vec4 vColor;
-            `).appendBody(`
-                gl_FragColor = vColor;
-            `);
-      });
-
     const multiSeries = fc
       .seriesWebglMulti()
-      .series([series5, series4, series3, series2, series1]); // Draw in reverse to show lowest sensor in front
+      .series([series3, series2, series1]); // Draw in reverse to show lowest sensor in front
     //   const multiSeries = fc.seriesWebglMulti().series([series1, series2]);
 
     const zoom = fc.zoom().on("zoom", render);
@@ -372,6 +286,16 @@ window.addEventListener("load", () => {
       .webglPlotArea(multiSeries)
       .decorate((selection) => {
         selection.enter().select(".plot-area").call(zoom, xScale);
+        selection
+          .enter()
+          .select(".webgl-series__bar")
+          .on("webgl-render", (d) => {
+            console.log("d2", d);
+            // Calculate the color of the bar based on the sensor reading
+            const color = colorInterpolator(d.sensor1 / 110);
+            // Set the color of the bar using the calculated color
+            sel.style("fill", color);
+          });
       });
 
     function render() {
@@ -382,3 +306,45 @@ window.addEventListener("load", () => {
   };
   dataWorker.postMessage({ numPoints: dataPoints });
 });
+
+// const series4 = fc
+// .seriesWebglBar()
+// .crossValue((d) => d.count)
+// .mainValue((d) => 10)
+// .baseValue((d) => 40)
+// .decorate((program) => {
+//   program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
+//     .appendBody(`
+//         if (aMainValue < 5.0) {
+//             vColor = vec4(1.0, 0.0, 0.0, 1.0);
+//         } else {
+//         vColor = vec4(1.0, 0.7, 0.0, 1.0);
+//         }
+//       `);
+//   program.fragmentShader().appendHeader(`
+//           varying lowp vec4 vColor;
+//       `).appendBody(`
+//           gl_FragColor = vColor;
+//       `);
+// });
+
+// const series5 = fc
+// .seriesWebglBar()
+// .crossValue((d) => d.count)
+// .mainValue((d) => 10)
+// .baseValue((d) => 50)
+// .decorate((program) => {
+//   program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
+//     .appendBody(`
+//         if (aMainValue > 5.0) {
+//             vColor = vec4(0.7, 0.2, 0.2, 1.0);
+//         } else {
+//         vColor = vec4(1.0, 0.7, 0.0, 1.0);
+//         }
+//       `);
+//   program.fragmentShader().appendHeader(`
+//           varying lowp vec4 vColor;
+//       `).appendBody(`
+//           gl_FragColor = vColor;
+//       `);
+// });
