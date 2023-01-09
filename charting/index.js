@@ -8,17 +8,16 @@ const dataPoints = 1000;
 dataWorker.onmessage = (e) => {
   const data = e.data;
   console.log("data", data);
-  // Draw chart.
-  // const xScale = d3.scaleTime().domain([data[0].date, data[dataPoints].date]);
-  // const xScale = d3.scaleTime().domain([0, 100]);
+  const stackedData = d3.stack().keys(["sensor"]).offset(d3.stackOffsetNone)(
+    data
+  );
+  console.log("stacked data: ", stackedData);
+
   const xScale = d3.scaleLinear().domain([0, 100]);
-  // const yScale = d3.scaleLinear().domain([0, 400]);
-  const yScale = d3.scaleLinear().domain([12, 30]);
+  const yScale = d3.scaleLinear().domain([0, 30]);
 
   const crossValue = (d) => d.count;
   const mainValue = (d) => d.distance;
-
-  // vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));
 
   const areaSeries = fc
     .seriesWebglArea()
@@ -43,8 +42,6 @@ dataWorker.onmessage = (e) => {
         `);
     });
 
-  //vColor = (vec4(0.55, 0.65, 0.75, 1) * colourModifier) + ((1.0 - colourModifier) * vec4(0.75, 0.45, 0.45, 1));`
-
   const lineSeries = fc
     .seriesWebglLine()
     .mainValue(mainValue)
@@ -66,7 +63,7 @@ dataWorker.onmessage = (e) => {
             `);
     });
 
-  const multiSeries = fc.seriesWebglMulti().series([areaSeries, lineSeries]);
+  const multiSeries = fc.seriesWebglMulti().series([areaSeries]);
 
   const zoom = fc.zoom().on("zoom", render);
 
@@ -88,13 +85,3 @@ dataWorker.onmessage = (e) => {
   render();
 };
 dataWorker.postMessage({ numPoints: dataPoints });
-
-// Testing
-// dataWorker.onmessage = (e) => {
-//   console.log("Event recieved from worker", e.data);
-// };
-// dataWorker.postMessage({ numPoints: 10000 });
-
-// setInterval(() => {
-//   dataWorker.postMessage({ msg: "SEND IT" });
-// }, 1500);
