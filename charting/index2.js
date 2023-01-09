@@ -220,18 +220,50 @@ window.addEventListener("load", () => {
       .crossValue((d) => d.count)
       .mainValue((d) => 10)
       .decorate((program, d) => {
+        // const gl = program.context();
+        // gl.useProgram(program);
+        // const programObject = program.program();
+        // const location = gl.getUniformLocation(programObject, "uSensorValue");
+
+        //     const attribute = fc
+        //   .webglAttribute()
+        //   .size(1)
+        //   .type(5126)
+        //   .data((context) => {
+        //     console.log(context);
+        //     return [context.datum.sensor1];
+        //   });
+        //     program.buffers().attribute("uSensorValue", attribute);
+
         // Define the sensor reading value as an attribute
-        program
-          .buffers()
-          .attribute("uSensorValue", (context) => context.datum.sensor1);
+        // let x = program.buffers();
+        // console.log("x", x);
+
+        // program
+        //   .buffers()
+        //   .attribute("uSensorValue", (context) => [context.datum.sensor1]);
+
+        // let ctx = program.context();
+        // console.log("ctx", ctx);
+
+        // let location = ctx.getUniformLocation(x, "uSensorValue");
+        // console.log("location", location);
+
+        // Create color value
 
         program.vertexShader().appendHeader(`
           uniform float uSensorValue;
           varying lowp vec4 vColor;
         `).appendBody(`
-            vColor = mix(vec4(0.0, 1.0, 0.0, 1.0), vec4(1.0, 1.0, 0.0, 1.0), uSensorValue);
-            vColor = mix(vColor, vec4(1.0, 0.5, 0.0, 1.0), uSensorValue);
-            vColor = mix(vColor, vec4(1.0, 0.0, 0.0, 1.0), uSensorValue);
+            vColor = mix(vec4(0.0, 1.0, 0.0, 1.0), vec4(1.0, 1.0, 0.0, 1.0), ${
+              Math.random() * 10
+            });
+            vColor = mix(vColor, vec4(1.0, 0.5, 0.0, 1.0), ${
+              Math.random() * 5
+            });
+            vColor = mix(vColor, vec4(1.0, 0.0, 0.0, 1.0), ${
+              Math.random() * 100
+            });
       `);
         program.fragmentShader().appendHeader(`
           varying lowp vec4 vColor;
