@@ -5,6 +5,8 @@ import {
   SimpleChart,
   CanvasHeatmap,
 } from "./components/organisms/CanvasHeatmap";
+import { StackedBarChart } from "./components/organisms/StackedBarChart";
+import StackedBarChartFC from "./components/organisms/StackedBarChartFC";
 import Footer from "./components/templates/Footer";
 import Header from "./components/templates/Header";
 
@@ -59,8 +61,10 @@ export const App = () => {
             src={"./belt2.png"}
           /> */}
           {/* <CanvasHeatmap containerRef={containerRef} /> */}
-          <SimpleChart />
-          <CanvasHeatmap />
+          {/* <SimpleChart /> */}
+          {/* <CanvasHeatmap /> */}
+          {/* <StackedBarChart /> */}
+          <StackedBarChartFC />
         </div>
       </div>
       <Footer />
