@@ -214,13 +214,31 @@ window.addEventListener("load", () => {
       .crossValue((d) => d.count)
       .mainValue((d) => 10)
       .decorate((program, d) => {
-        const color = colorInterpolator(d.sensor1 / 110);
-        console.log("color, ", color);
+        let x = d[0].sensor1 / 100;
+        console.log("sensor1", d);
+
+        // Create a colour gradient between red and green
+        const gradient = d3
+          .scaleLinear()
+          .domain([0, 1])
+          .range([colorInterpolator(x), colorInterpolator(1 - x)]);
+
+        // test
+        const { r, g, b, opacity } = d3.color(gradient(d[0].sensor1));
+
+        // Do the color gradient for each bar
+        d.forEach((z) => {
+          // Each bar should be a seperate colour based on gradient value
+          console.log(z.sensor1);
+          const { r, g, b, opacity } = d3.color(gradient(z.sensor1));
+          console.log("r", r, "g", g, "b", b, "opacity", opacity);
+        });
+
         program
           .vertexShader()
           .appendHeader(`varying lowp vec4 vColor;`)
           // Set the color of the bar using the calculated color
-          .appendBody(`vColor = vec4(${color}, 1.0);`);
+          .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
         program.fragmentShader().appendHeader(`
                 varying lowp vec4 vColor;
             `).appendBody(`
