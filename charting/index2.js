@@ -3,295 +3,202 @@ window.addEventListener("load", () => {
   const dataWorker = new Worker("dataWorker.js");
 
   // Global testing setup
-  const dataPoints = 1000;
+  const dataPoints = 100000;
 
   dataWorker.onmessage = (e) => {
-    const data = [
-      {
-        count: 1,
-        sensor1: 10,
-        sensor2: 5,
-        sensor3: 8,
-        sensor4: 12,
-        sensor5: 15,
-      },
-      {
-        count: 2,
-        sensor1: 15,
-        sensor2: 10,
-        sensor3: 12,
-        sensor4: 18,
-        sensor5: 22,
-      },
-      {
-        count: 3,
-        sensor1: 20,
-        sensor2: 15,
-        sensor3: 16,
-        sensor4: 24,
-        sensor5: 30,
-      },
-      {
-        count: 4,
-        sensor1: 25,
-        sensor2: 20,
-        sensor3: 20,
-        sensor4: 30,
-        sensor5: 37,
-      },
-      {
-        count: 5,
-        sensor1: 30,
-        sensor2: 25,
-        sensor3: 24,
-        sensor4: 36,
-        sensor5: 45,
-      },
-      {
-        count: 6,
-        sensor1: 35,
-        sensor2: 30,
-        sensor3: 28,
-        sensor4: 42,
-        sensor5: 52,
-      },
-      {
-        count: 7,
-        sensor1: 40,
-        sensor2: 35,
-        sensor3: 32,
-        sensor4: 48,
-        sensor5: 60,
-      },
-      {
-        count: 8,
-        sensor1: 45,
-        sensor2: 40,
-        sensor3: 36,
-        sensor4: 54,
-        sensor5: 67,
-      },
-      {
-        count: 9,
-        sensor1: 50,
-        sensor2: 45,
-        sensor3: 40,
-        sensor4: 60,
-        sensor5: 75,
-      },
-      {
-        count: 10,
-        sensor1: 55,
-        sensor2: 50,
-        sensor3: 44,
-        sensor4: 66,
-        sensor5: 82,
-      },
-      {
-        count: 11,
-        sensor1: 60,
-        sensor2: 55,
-        sensor3: 48,
-        sensor4: 72,
-        sensor5: 90,
-      },
-      {
-        count: 12,
-        sensor1: 65,
-        sensor2: 60,
-        sensor3: 52,
-        sensor4: 78,
-        sensor5: 97,
-      },
-      {
-        count: 13,
-        sensor1: 70,
-        sensor2: 65,
-        sensor3: 56,
-        sensor4: 84,
-        sensor5: 105,
-      },
-      {
-        count: 14,
-        sensor1: 75,
-        sensor2: 70,
-        sensor3: 60,
-        sensor4: 90,
-        sensor5: 112,
-      },
-      {
-        count: 15,
-        sensor1: 80,
-        sensor2: 75,
-        sensor3: 64,
-        sensor4: 96,
-        sensor5: 120,
-      },
-      {
-        count: 16,
-        sensor1: 85,
-        sensor2: 80,
-        sensor3: 68,
-        sensor4: 102,
-        sensor5: 127,
-      },
-      {
-        count: 17,
-        sensor1: 90,
-        sensor2: 85,
-        sensor3: 72,
-        sensor4: 108,
-        sensor5: 135,
-      },
-      {
-        count: 18,
-        sensor1: 95,
-        sensor2: 90,
-        sensor3: 76,
-        sensor4: 114,
-        sensor5: 142,
-      },
-      {
-        count: 19,
-        sensor1: 100,
-        sensor2: 95,
-        sensor3: 80,
-        sensor4: 120,
-        sensor5: 150,
-      },
-      {
-        count: 20,
-        sensor1: 105,
-        sensor2: 100,
-        sensor3: 84,
-        sensor4: 126,
-        sensor5: 157,
-      },
-      {
-        count: 21,
-        sensor1: 110,
-        sensor2: 105,
-        sensor3: 88,
-        sensor4: 132,
-        sensor5: 165,
-      },
-      {
-        count: 22,
-        sensor1: 115,
-        sensor2: 110,
-        sensor3: 92,
-        sensor4: 138,
-        sensor5: 172,
-      },
-      {
-        count: 23,
-        sensor1: 120,
-        sensor2: 115,
-        sensor3: 96,
-        sensor4: 144,
-        sensor5: 180,
-      },
-      {
-        count: 24,
-        sensor1: 125,
-        sensor2: 120,
-        sensor3: 100,
-        sensor4: 150,
-        sensor5: 187,
-      },
-    ];
+    const { data } = e;
+    // console.log("data", data);
 
     const xScale = d3.scaleLinear().domain([0, 100]);
-    const yScale = d3.scaleLinear().domain([0, 100]);
+    const yScale = d3.scaleLinear().domain([0, 10]);
 
-    // Create an interpolator to map sensor values to colors
-    const colorInterpolator = d3.interpolate("green", "red");
+    const getColor = (sensor1) => {
+      const minSensor1 = 0; // minimum sensor1 value
+      const maxSensor1 = 30; // maximum sensor1 value
+
+      if (minSensor1 >= maxSensor1) {
+        console.error("Invalid sensor1 range");
+        return "rgba(0, 0, 0, 1)";
+      }
+
+      // Normalize the sensor1 value between 0 and 1
+      const normalizedSensor1 =
+        (sensor1 - minSensor1) / (maxSensor1 - minSensor1);
+      const r = normalizedSensor1;
+      const g = 1 - normalizedSensor1;
+
+      // Normalize the opacity value between 0 and 1
+      const minOpacity = 0.5; // minimum opacity value
+      const maxOpacity = 1; // maximum opacity value
+      const normalizedOpacity =
+        (sensor1 - minOpacity) / (maxOpacity - minOpacity);
+      const opacity = normalizedOpacity.toFixed(2); // Round to 2 decimal places
+      // return `rgba(${r}, ${g}, 0, ${opacity})`;
+      // TODO - Fix opacity override
+      return { r, g, b: 0, opacity: 1 };
+    };
 
     const series1 = fc
       .seriesWebglBar()
       .defined(() => true)
       .equals((d) => d.length)
       .crossValue((d) => d.count)
-      .mainValue((d) => 10)
+      .mainValue((d) => 1)
+      .baseValue(0)
       .decorate((program, d) => {
-        let x = d[0].sensor1 / 100;
-        console.log("sensor1", d);
-
-        // Create a colour gradient between red and green
-        const gradient = d3
-          .scaleLinear()
-          .domain([0, 1])
-          .range([colorInterpolator(x), colorInterpolator(1 - x)]);
-
-        // test
-        const { r, g, b, opacity } = d3.color(gradient(d[0].sensor1));
-
-        // Do the color gradient for each bar
-        d.forEach((z) => {
-          // Each bar should be a seperate colour based on gradient value
-          console.log(z.sensor1);
-          const { r, g, b, opacity } = d3.color(gradient(z.sensor1));
-          console.log("r", r, "g", g, "b", b, "opacity", opacity);
-        });
-
-        program
-          .vertexShader()
-          .appendHeader(`varying lowp vec4 vColor;`)
-          // Set the color of the bar using the calculated color
-          .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        // Initialize the program object
+        program.vertexShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        vColor = vec4(1, 1, 1, 1);
+      `);
         program.fragmentShader().appendHeader(`
-                varying lowp vec4 vColor;
-            `).appendBody(`
-                gl_FragColor = vColor;
-            `);
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        gl_FragColor = vColor;
+      `);
+
+        // Calculate the color for each bar in the series
+        d.forEach((z, i) => {
+          const { r, g, b, opacity } = getColor(z.sensor1);
+          // console.log("r", r, "g", g, "b", b, "opacity", opacity);
+
+          // Set the color of the bar using the calculated color
+          program
+            .vertexShader()
+            .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        });
       });
 
     const series2 = fc
       .seriesWebglBar()
+      .defined(() => true)
+      .equals((d) => d.length)
       .crossValue((d) => d.count)
-      .mainValue((d) => 10)
-      .baseValue((d) => 20)
-      .decorate((program) => {
-        program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-          .appendBody(`
-              if (aMainValue < 5.0) {
-                  vColor = vec4(1.0, 0.0, 0.0, 1.0);
-              } else {
-              vColor = vec4(0.0, 1.0, 0.0, 1.0);
-              }
-            `);
+      .mainValue(2)
+      .baseValue(1)
+      .decorate((program, d) => {
+        // Initialize the program object
+        program.vertexShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        vColor = vec4(1, 1, 1, 1);
+      `);
         program.fragmentShader().appendHeader(`
-                varying lowp vec4 vColor;
-            `).appendBody(`
-                gl_FragColor = vColor;
-            `);
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        gl_FragColor = vColor;
+      `);
+
+        // Calculate the color for each bar in the series
+        d.forEach((z, i) => {
+          const { r, g, b, opacity } = getColor(z.sensor2);
+          // console.log("r", r, "g", g, "b", b, "opacity", opacity);
+
+          // Set the color of the bar using the calculated color
+          program
+            .vertexShader()
+            .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        });
       });
 
     const series3 = fc
       .seriesWebglBar()
+      .defined(() => true)
+      .equals((d) => d.length)
       .crossValue((d) => d.count)
-      .mainValue((d) => 10)
-      .baseValue((d) => 30)
-      .decorate((program) => {
-        program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-          .appendBody(`
-              if (aMainValue > 5.0) {
-                  vColor = vec4(1.0, 0.0, 0.0, 1.0);
-              } else {
-              vColor = vec4(1.0, 0.0, 1.0, 1.0);
-              }
-            `);
+      .mainValue(3)
+      .baseValue(2)
+      .decorate((program, d) => {
+        // Initialize the program object
+        program.vertexShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        vColor = vec4(1, 1, 1, 1);
+      `);
         program.fragmentShader().appendHeader(`
-                varying lowp vec4 vColor;
-            `).appendBody(`
-                gl_FragColor = vColor;
-            `);
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        gl_FragColor = vColor;
+      `);
+
+        // Calculate the color for each bar in the series
+        d.forEach((z, i) => {
+          const { r, g, b, opacity } = getColor(z.sensor3);
+          // console.log("r", r, "g", g, "b", b, "opacity", opacity);
+
+          // Set the color of the bar using the calculated color
+          program
+            .vertexShader()
+            .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        });
       });
 
+    const series4 = fc
+      .seriesWebglBar()
+      .defined(() => true)
+      .equals((d) => d.length)
+      .crossValue((d) => d.count)
+      .mainValue(4)
+      .baseValue(3)
+      .decorate((program, d) => {
+        // Initialize the program object
+        program.vertexShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        vColor = vec4(1, 1, 1, 1);
+      `);
+        program.fragmentShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        gl_FragColor = vColor;
+      `);
+
+        // Calculate the color for each bar in the series
+        d.forEach((z, i) => {
+          const { r, g, b, opacity } = getColor(z.sensor4);
+          // console.log("r", r, "g", g, "b", b, "opacity", opacity);
+
+          // Set the color of the bar using the calculated color
+          program
+            .vertexShader()
+            .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        });
+      });
+    const series5 = fc
+      .seriesWebglBar()
+      .defined(() => true)
+      .equals((d) => d.length)
+      .crossValue((d) => d.count)
+      .mainValue(5)
+      .baseValue(4)
+      .decorate((program, d) => {
+        // Initialize the program object
+        program.vertexShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        vColor = vec4(1, 1, 1, 1);
+      `);
+        program.fragmentShader().appendHeader(`
+        varying lowp vec4 vColor;
+      `).appendBody(`
+        gl_FragColor = vColor;
+      `);
+
+        // Calculate the color for each bar in the series
+        d.forEach((z, i) => {
+          const { r, g, b, opacity } = getColor(z.sensor5);
+          // console.log("r", r, "g", g, "b", b, "opacity", opacity);
+
+          // Set the color of the bar using the calculated color
+          program
+            .vertexShader()
+            .appendBody(`vColor = vec4(${r}, ${g}, ${b}, ${opacity});`);
+        });
+      });
     const multiSeries = fc
       .seriesWebglMulti()
-      .series([series3, series2, series1]); // Draw in reverse to show lowest sensor in front
-    //   const multiSeries = fc.seriesWebglMulti().series([series1, series2]);
+      .series([series5, series4, series3, series2, series1]);
 
     const zoom = fc.zoom().on("zoom", render);
 
@@ -304,16 +211,6 @@ window.addEventListener("load", () => {
       .webglPlotArea(multiSeries)
       .decorate((selection) => {
         selection.enter().select(".plot-area").call(zoom, xScale);
-        selection
-          .enter()
-          .select(".webgl-series__bar")
-          .on("webgl-render", (d) => {
-            console.log("d2", d);
-            // Calculate the color of the bar based on the sensor reading
-            const color = colorInterpolator(d.sensor1 / 110);
-            // Set the color of the bar using the calculated color
-            sel.style("fill", color);
-          });
       });
 
     function render() {
@@ -324,45 +221,3 @@ window.addEventListener("load", () => {
   };
   dataWorker.postMessage({ numPoints: dataPoints });
 });
-
-// const series4 = fc
-// .seriesWebglBar()
-// .crossValue((d) => d.count)
-// .mainValue((d) => 10)
-// .baseValue((d) => 40)
-// .decorate((program) => {
-//   program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-//     .appendBody(`
-//         if (aMainValue < 5.0) {
-//             vColor = vec4(1.0, 0.0, 0.0, 1.0);
-//         } else {
-//         vColor = vec4(1.0, 0.7, 0.0, 1.0);
-//         }
-//       `);
-//   program.fragmentShader().appendHeader(`
-//           varying lowp vec4 vColor;
-//       `).appendBody(`
-//           gl_FragColor = vColor;
-//       `);
-// });
-
-// const series5 = fc
-// .seriesWebglBar()
-// .crossValue((d) => d.count)
-// .mainValue((d) => 10)
-// .baseValue((d) => 50)
-// .decorate((program) => {
-//   program.vertexShader().appendHeader(`varying lowp vec4 vColor;`)
-//     .appendBody(`
-//         if (aMainValue > 5.0) {
-//             vColor = vec4(0.7, 0.2, 0.2, 1.0);
-//         } else {
-//         vColor = vec4(1.0, 0.7, 0.0, 1.0);
-//         }
-//       `);
-//   program.fragmentShader().appendHeader(`
-//           varying lowp vec4 vColor;
-//       `).appendBody(`
-//           gl_FragColor = vColor;
-//       `);
-// });
